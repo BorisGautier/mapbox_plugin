@@ -101,9 +101,7 @@ class SymbolOptions {
   final int zIndex;
   final bool draggable;
 
-  static const SymbolOptions defaultOptions = SymbolOptions(
-
-  );
+  static const SymbolOptions defaultOptions = SymbolOptions();
 
   SymbolOptions copyWith(SymbolOptions changes) {
     if (changes == null) {
@@ -178,5 +176,4 @@ class SymbolOptions {
     addIfPresent('draggable', draggable);
     return json;
   }
-
 }

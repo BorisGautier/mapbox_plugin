@@ -6,7 +6,7 @@
 
 part of mapbox_plugin;
 
-class Circle  {
+class Circle {
   @visibleForTesting
   Circle(this._id, this._options);
 
@@ -36,15 +36,15 @@ class CircleOptions {
   /// By default, every non-specified field is null, meaning no desire to change
   /// circle defaults or current configuration.
   const CircleOptions({
-     this.circleRadius,
-     this.circleColor,
-     this.circleBlur,
-     this.circleOpacity,
-     this.circleStrokeWidth,
-     this.circleStrokeColor,
-     this.circleStrokeOpacity,
-     this.geometry,
-     this.draggable,
+    this.circleRadius,
+    this.circleColor,
+    this.circleBlur,
+    this.circleOpacity,
+    this.circleStrokeWidth,
+    this.circleStrokeColor,
+    this.circleStrokeOpacity,
+    this.geometry,
+    this.draggable,
   });
 
   final double circleRadius;
@@ -57,9 +57,7 @@ class CircleOptions {
   final LatLng geometry;
   final bool draggable;
 
-  static const CircleOptions defaultOptions = CircleOptions(
-
-  );
+  static const CircleOptions defaultOptions = CircleOptions();
 
   CircleOptions copyWith(CircleOptions changes) {
     if (changes == null) {

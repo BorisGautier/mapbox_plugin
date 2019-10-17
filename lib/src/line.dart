@@ -97,7 +97,8 @@ class LineOptions {
     addIfPresent('lineOffset', lineOffset);
     addIfPresent('lineBlur', lineBlur);
     addIfPresent('linePattern', linePattern);
-    addIfPresent('geometry', geometry?.map((LatLng latLng) => latLng._toJson())?.toList());
+    addIfPresent('geometry',
+        geometry?.map((LatLng latLng) => latLng._toJson())?.toList());
     addIfPresent('draggable', draggable);
     return json;
   }

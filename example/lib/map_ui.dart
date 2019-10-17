@@ -48,7 +48,8 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _tiltGesturesEnabled = true;
   bool _zoomGesturesEnabled = true;
   bool _myLocationEnabled = true;
-  MyLocationTrackingMode _myLocationTrackingMode = MyLocationTrackingMode.Tracking;
+  MyLocationTrackingMode _myLocationTrackingMode =
+      MyLocationTrackingMode.Tracking;
 
   @override
   void initState() {
@@ -73,8 +74,9 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _myLocationTrackingModeCycler() {
-    final MyLocationTrackingMode nextType =
-        MyLocationTrackingMode.values[(_myLocationTrackingMode.index + 1) % MyLocationTrackingMode.values.length];
+    final MyLocationTrackingMode nextType = MyLocationTrackingMode.values[
+    (_myLocationTrackingMode.index + 1) %
+        MyLocationTrackingMode.values.length];
     return FlatButton(
       child: Text('change to $nextType'),
       onPressed: () {
@@ -93,7 +95,7 @@ class MapUiBodyState extends State<MapUiBody> {
           _compassEnabled = !_compassEnabled;
         });
       },
-    ); 
+    );
   }
 
   Widget _latLngBoundsToggler() {
@@ -197,32 +199,33 @@ class MapUiBodyState extends State<MapUiBody> {
   @override
   Widget build(BuildContext context) {
     final MapboxMap mapboxMap = MapboxMap(
-      onMapCreated: onMapCreated,
-      initialCameraPosition: _kInitialPosition,
-      trackCameraPosition: true,
-      compassEnabled: _compassEnabled,
-      cameraTargetBounds: _cameraTargetBounds,
-      minMaxZoomPreference: _minMaxZoomPreference,
-      styleString: _styleString,
-      rotateGesturesEnabled: _rotateGesturesEnabled,
-      scrollGesturesEnabled: _scrollGesturesEnabled,
-      tiltGesturesEnabled: _tiltGesturesEnabled,
-      zoomGesturesEnabled: _zoomGesturesEnabled,
-      myLocationEnabled: _myLocationEnabled,
-      myLocationTrackingMode: _myLocationTrackingMode,
-      onMapClick: (point, latLng) async {
-        print("${point.x},${point.y}   ${latLng.latitude}/${latLng.longitude}");
-        List features = await mapController.queryRenderedFeatures(point, [],null);
-        if (features.length>0) {
-          print(features[0]);
-        }
-      },
-      onCameraTrackingDismissed: () {
-        this.setState(() {
-          _myLocationTrackingMode = MyLocationTrackingMode.None;
+        onMapCreated: onMapCreated,
+        initialCameraPosition: _kInitialPosition,
+        trackCameraPosition: true,
+        compassEnabled: _compassEnabled,
+        cameraTargetBounds: _cameraTargetBounds,
+        minMaxZoomPreference: _minMaxZoomPreference,
+        styleString: _styleString,
+        rotateGesturesEnabled: _rotateGesturesEnabled,
+        scrollGesturesEnabled: _scrollGesturesEnabled,
+        tiltGesturesEnabled: _tiltGesturesEnabled,
+        zoomGesturesEnabled: _zoomGesturesEnabled,
+        myLocationEnabled: _myLocationEnabled,
+        myLocationTrackingMode: _myLocationTrackingMode,
+        onMapClick: (point, latLng) async {
+          print(
+              "${point.x},${point.y}   ${latLng.latitude}/${latLng.longitude}");
+          List features =
+          await mapController.queryRenderedFeatures(point, [], null);
+          if (features.length > 0) {
+            print(features[0]);
+          }
+        },
+        onCameraTrackingDismissed: () {
+          this.setState(() {
+            _myLocationTrackingMode = MyLocationTrackingMode.None;
+          });
         });
-      }
-    );
 
     final List<Widget> columnChildren = <Widget>[
       Padding(

@@ -399,7 +399,6 @@ class MapboxMapController extends ChangeNotifier {
     notifyListeners();
   }
 
-
   /// Removes the specified [circle] from the map. The circle must be a current
   /// member of the [circles] set.
   ///

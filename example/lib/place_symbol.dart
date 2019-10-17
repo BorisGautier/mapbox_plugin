@@ -156,8 +156,7 @@ class PlaceSymbolBodyState extends State<PlaceSymbolBody> {
     }
 
     _updateSelectedSymbol(
-      SymbolOptions(
-          iconOpacity: current == 0.0 ? 1.0 : 0.0),
+      SymbolOptions(iconOpacity: current == 0.0 ? 1.0 : 0.0),
     );
   }
 

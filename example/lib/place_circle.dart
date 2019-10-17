@@ -134,7 +134,8 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
       // default value
       current = 0;
     }
-    _updateSelectedCircle(CircleOptions(circleStrokeWidth: current == 0 ? 5.0 : 0));
+    _updateSelectedCircle(
+        CircleOptions(circleStrokeWidth: current == 0 ? 5.0 : 0));
   }
 
   Future<void> _changeCircleStrokeColor() async {
@@ -145,7 +146,8 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
     }
 
     _updateSelectedCircle(
-      CircleOptions(circleStrokeColor: current == "#FFFFFF" ? "#FF0000" : "#FFFFFF"),
+      CircleOptions(
+          circleStrokeColor: current == "#FFFFFF" ? "#FF0000" : "#FFFFFF"),
     );
   }
 
@@ -180,8 +182,7 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
     }
 
     _updateSelectedCircle(
-      CircleOptions(
-          circleColor: "#FFFF00"),
+      CircleOptions(circleColor: "#FFFF00"),
     );
   }
 
@@ -238,8 +239,9 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
                       children: <Widget>[
                         FlatButton(
                           child: const Text('change circle-opacity'),
-                          onPressed:
-                              (_selectedCircle == null) ? null : _changeCircleOpacity,
+                          onPressed: (_selectedCircle == null)
+                              ? null
+                              : _changeCircleOpacity,
                         ),
                         FlatButton(
                           child: const Text('change circle-radius'),
@@ -249,18 +251,21 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
                         ),
                         FlatButton(
                           child: const Text('change circle-color'),
-                          onPressed:
-                          (_selectedCircle == null) ? null : _changeCircleColor,
+                          onPressed: (_selectedCircle == null)
+                              ? null
+                              : _changeCircleColor,
                         ),
                         FlatButton(
                           child: const Text('change circle-blur'),
-                          onPressed:
-                          (_selectedCircle == null) ? null : _changeCircleBlur,
+                          onPressed: (_selectedCircle == null)
+                              ? null
+                              : _changeCircleBlur,
                         ),
                         FlatButton(
                           child: const Text('change circle-stroke-width'),
-                          onPressed:
-                              (_selectedCircle == null) ? null : _changeCircleStrokeWidth,
+                          onPressed: (_selectedCircle == null)
+                              ? null
+                              : _changeCircleStrokeWidth,
                         ),
                         FlatButton(
                           child: const Text('change circle-stroke-color'),
