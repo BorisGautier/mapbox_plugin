@@ -31,5 +31,7 @@ interface MapboxMapOptionsSink {
 
   void setMyLocationEnabled(boolean myLocationEnabled);
 
+    void setInitialMarkers(Object initialMarkers);
+
   void setMyLocationTrackingMode(int myLocationTrackingMode);
 }

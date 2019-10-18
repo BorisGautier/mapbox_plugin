@@ -10,6 +10,7 @@ class MapboxMap extends StatefulWidget {
   const MapboxMap({
     @required this.initialCameraPosition,
     this.onMapCreated,
+    this.markers,
     this.gestureRecognizers,
     this.compassEnabled = true,
     this.cameraTargetBounds = CameraTargetBounds.unbounded,
@@ -61,6 +62,8 @@ class MapboxMap extends StatefulWidget {
 
   /// True if the map view should relay camera move events to Flutter.
   final bool trackCameraPosition;
+
+  final Set<Marker> markers;
 
   /// True if a "My Location" layer should be shown on the map.
   ///
@@ -114,6 +117,8 @@ class _MapboxMapState extends State<MapboxMap> {
   final Completer<MapboxMapController> _controller =
       Completer<MapboxMapController>();
 
+  Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
+
   _MapboxMapOptions _mapboxMapOptions;
 
   @override
@@ -121,10 +126,11 @@ class _MapboxMapState extends State<MapboxMap> {
     final Map<String, dynamic> creationParams = <String, dynamic>{
       'initialCameraPosition': widget.initialCameraPosition?._toMap(),
       'options': _MapboxMapOptions.fromWidget(widget).toMap(),
+      'markersToAdd': _serializeMarkerSet(widget.markers),
     };
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
-        viewType: 'plugins.flutter.io/mapbox_gl',
+        viewType: 'plugins.flutter.io/mapbox_plugin',
         onPlatformViewCreated: onPlatformViewCreated,
         gestureRecognizers: widget.gestureRecognizers,
         creationParams: creationParams,
@@ -132,7 +138,7 @@ class _MapboxMapState extends State<MapboxMap> {
       );
     } else if (defaultTargetPlatform == TargetPlatform.iOS) {
       return UiKitView(
-        viewType: 'plugins.flutter.io/mapbox_gl',
+        viewType: 'plugins.flutter.io/mapbox_plugin',
         onPlatformViewCreated: onPlatformViewCreated,
         gestureRecognizers: widget.gestureRecognizers,
         creationParams: creationParams,
@@ -148,6 +154,7 @@ class _MapboxMapState extends State<MapboxMap> {
   void initState() {
     super.initState();
     _mapboxMapOptions = _MapboxMapOptions.fromWidget(widget);
+    _markers = _keyByMarkerId(widget.markers);
   }
 
   @override
@@ -157,8 +164,10 @@ class _MapboxMapState extends State<MapboxMap> {
     final Map<String, dynamic> updates =
         _mapboxMapOptions.updatesMap(newOptions);
     _updateOptions(updates);
+    _updateMarkers();
     _mapboxMapOptions = newOptions;
   }
+
 
   void _updateOptions(Map<String, dynamic> updates) async {
     if (updates.isEmpty) {
@@ -168,6 +177,14 @@ class _MapboxMapState extends State<MapboxMap> {
     controller._updateMapOptions(updates);
   }
 
+  void _updateMarkers() async {
+    final MapboxMapController controller = await _controller.future;
+    controller._updateMarkers(
+        _MarkerUpdates.from(_markers.values.toSet(), widget.markers));
+    _markers = _keyByMarkerId(widget.markers);
+  }
+
+
   Future<void> onPlatformViewCreated(int id) async {
     final MapboxMapController controller = await MapboxMapController.init(
         id, widget.initialCameraPosition,
@@ -176,6 +193,22 @@ class _MapboxMapState extends State<MapboxMap> {
     _controller.complete(controller);
     if (widget.onMapCreated != null) {
       widget.onMapCreated(controller);
+    }
+  }
+
+  void onMarkerTap(String markerIdParam) {
+    assert(markerIdParam != null);
+    final MarkerId markerId = MarkerId(markerIdParam);
+    if (_markers[markerId]?.onTap != null) {
+      _markers[markerId].onTap();
+    }
+  }
+
+  void onInfoWindowTap(String markerIdParam) {
+    assert(markerIdParam != null);
+    final MarkerId markerId = MarkerId(markerIdParam);
+    if (_markers[markerId]?.infoWindow?.onTap != null) {
+      _markers[markerId].infoWindow.onTap();
     }
   }
 }

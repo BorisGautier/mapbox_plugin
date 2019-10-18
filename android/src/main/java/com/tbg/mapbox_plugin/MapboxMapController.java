@@ -13,14 +13,15 @@ import android.content.pm.PackageManager;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 
+import com.mapbox.geojson.Feature;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdate;
-
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.location.LocationComponent;
@@ -35,18 +36,12 @@ import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.plugins.annotation.Annotation;
 import com.mapbox.mapboxsdk.plugins.annotation.Circle;
 import com.mapbox.mapboxsdk.plugins.annotation.CircleManager;
+import com.mapbox.mapboxsdk.plugins.annotation.Line;
+import com.mapbox.mapboxsdk.plugins.annotation.LineManager;
 import com.mapbox.mapboxsdk.plugins.annotation.OnAnnotationClickListener;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
-import com.mapbox.mapboxsdk.plugins.annotation.Line;
-import com.mapbox.mapboxsdk.plugins.annotation.LineManager;
-import com.mapbox.mapboxsdk.annotations.Marker;
-import com.mapbox.geojson.Feature;
 import com.mapbox.mapboxsdk.style.expressions.Expression;
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.PluginRegistry;
-import io.flutter.plugin.platform.PlatformView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,6 +49,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.PluginRegistry;
+import io.flutter.plugin.platform.PlatformView;
 
 import static com.tbg.mapbox_plugin.MapboxPlugin.CREATED;
 import static com.tbg.mapbox_plugin.MapboxPlugin.DESTROYED;
@@ -70,6 +70,7 @@ final class MapboxMapController
   MapboxMap.OnCameraIdleListener,
   MapboxMap.OnCameraMoveListener,
   MapboxMap.OnCameraMoveStartedListener,
+        MapboxMap.OnMarkerClickListener,
   OnAnnotationClickListener,
   MapboxMap.OnMapClickListener,
   MapboxMapOptionsSink,
@@ -101,6 +102,8 @@ final class MapboxMapController
   private MethodChannel.Result mapReadyResult;
   private final int registrarActivityHashCode;
   private final Context context;
+  private final MarkersController markersController;
+  private List<Object> initialMarkers;
   private final String styleStringInitial;
   private LocationComponent locationComponent = null;
 
@@ -126,6 +129,7 @@ final class MapboxMapController
       new MethodChannel(registrar.messenger(), "plugins.flutter.io/mapbox_maps_" + id);
     methodChannel.setMethodCallHandler(this);
     this.registrarActivityHashCode = registrar.activity().hashCode();
+    this.markersController = new MarkersController(methodChannel);
   }
 
   private static String getAccessToken(@NonNull Context context) {
@@ -267,6 +271,9 @@ final class MapboxMapController
     mapboxMap.addOnCameraMoveListener(this);
     mapboxMap.addOnCameraIdleListener(this);
     setStyleString(styleStringInitial);
+    mapboxMap.setOnMarkerClickListener(this);
+    markersController.setmapboxMap(mapboxMap);
+    updateInitialMarkers();
     // updateMyLocationEnabled();
   }
 
@@ -338,6 +345,7 @@ final class MapboxMapController
     }
   }
 
+
   @Override
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
     switch (call.method) {
@@ -371,13 +379,23 @@ final class MapboxMapController
         result.success(null);
         break;
       }
+      case "markers#update": {
+        Object markersToAdd = call.argument("markersToAdd");
+        markersController.addMarkers((List<Object>) markersToAdd);
+        Object markersToChange = call.argument("markersToChange");
+        markersController.changeMarkers((List<Object>) markersToChange);
+        Object markerIdsToRemove = call.argument("markerIdsToRemove");
+        markersController.removeMarkers((List<Object>) markerIdsToRemove);
+        result.success(null);
+        break;
+      }
       case "map#queryRenderedFeatures": {
         Map<String, Object> reply = new HashMap<>();
         List<Feature> features;
 
         String[] layerIds = ((List<String>) call.argument("layerIds")).toArray(new String[0]);
 
-        String filter = (String) call.argument("filter");
+        String filter = call.argument("filter");
 
         Expression filterExpression = filter == null ? null : new Expression(filter);
         if (call.hasArgument("x")) {
@@ -471,6 +489,7 @@ final class MapboxMapController
         result.success(null);
         break;
       }
+
       default:
         result.notImplemented();
     }
@@ -739,4 +758,23 @@ final class MapboxMapController
       permission, android.os.Process.myPid(), android.os.Process.myUid());
   }
 
+  @Override
+  public boolean onMarkerClick(@NonNull Marker marker) {
+    Long id = marker.getId();
+    String m = id.toString();
+    return markersController.onMarkerTap(m);
+  }
+
+  @Override
+  public void setInitialMarkers(Object initialMarkers) {
+    this.initialMarkers = (List<Object>) initialMarkers;
+    if (mapboxMap != null) {
+      updateInitialMarkers();
+    }
+  }
+
+
+  private void updateInitialMarkers() {
+    markersController.addMarkers(initialMarkers);
+  }
 }

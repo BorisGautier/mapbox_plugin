@@ -47,3 +47,44 @@ class BitmapDescriptor {
 
   dynamic _toJson() => _json;
 }
+
+class IconMarker {
+  const IconMarker._(this._json);
+
+  static const double hueRed = 0.0;
+  static const double hueOrange = 30.0;
+  static const double hueYellow = 60.0;
+  static const double hueGreen = 120.0;
+  static const double hueCyan = 180.0;
+  static const double hueAzure = 210.0;
+  static const double hueBlue = 240.0;
+  static const double hueViolet = 270.0;
+  static const double hueMagenta = 300.0;
+  static const double hueRose = 330.0;
+
+  /// Creates a BitmapDescriptor that refers to the default marker image.
+  static const IconMarker defaultMarker =
+  IconMarker._(<dynamic>['defaultMarker']);
+
+  /// Creates a BitmapDescriptor that refers to a colorization of the default
+  /// marker image. For convenience, there is a predefined set of hue values.
+  /// See e.g. [hueYellow].
+  static IconMarker defaultMarkerWithHue(double hue) {
+    assert(0.0 <= hue && hue < 360.0);
+    return IconMarker._(<dynamic>['defaultMarker', hue]);
+  }
+
+  /// Creates a BitmapDescriptor using the name of a bitmap image in the assets
+  /// directory.
+  static IconMarker fromAsset(String assetName, {String package}) {
+    if (package == null) {
+      return IconMarker._(<dynamic>['fromAsset', assetName]);
+    } else {
+      return IconMarker._(<dynamic>['fromAsset', assetName, package]);
+    }
+  }
+
+  final dynamic _json;
+
+  dynamic _toJson() => _json;
+}

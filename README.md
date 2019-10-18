@@ -1,6 +1,5 @@
 # Mapbox PLUGIN Native
 
-> **Please note that this project is community driven and is not an official Mapbox product.** We welcome [feedback](https://github.com/dart-lang/pub-dev/issues) and contributions.
 
 Ce plugin Flutter pour mapbox-gl-native permet d’intégrer des cartes vectorielles interactives et personnalisables dans un widget Flutter en incorporant des vues Android et iOS.
 

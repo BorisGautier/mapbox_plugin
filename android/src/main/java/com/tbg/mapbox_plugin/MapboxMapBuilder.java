@@ -8,6 +8,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.maps.MapboxMapOptions;
 import com.mapbox.mapboxsdk.maps.Style;
 
@@ -24,6 +25,7 @@ class MapboxMapBuilder implements MapboxMapOptionsSink {
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
   private int myLocationTrackingMode = 0;
+    private Object initialMarkers;
   private String styleString = Style.MAPBOX_STREETS;
 
   MapboxMapController build(
@@ -34,6 +36,7 @@ class MapboxMapBuilder implements MapboxMapOptionsSink {
     controller.setMyLocationEnabled(myLocationEnabled);
     controller.setMyLocationTrackingMode(myLocationTrackingMode);
     controller.setTrackCameraPosition(trackCameraPosition);
+      controller.setInitialMarkers(initialMarkers);
     return controller;
   }
 
@@ -98,6 +101,11 @@ class MapboxMapBuilder implements MapboxMapOptionsSink {
   public void setMyLocationEnabled(boolean myLocationEnabled) {
     this.myLocationEnabled = myLocationEnabled;
   }
+
+    @Override
+    public void setInitialMarkers(Object initialMarkers) {
+        this.initialMarkers = initialMarkers;
+    }
 
   @Override
   public void setMyLocationTrackingMode(int myLocationTrackingMode) {

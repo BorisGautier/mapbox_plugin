@@ -4,10 +4,16 @@
 
 package com.tbg.mapbox_plugin;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 
+import com.mapbox.mapboxsdk.annotations.Icon;
+import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdate;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.log.Logger;
@@ -19,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.flutter.view.FlutterMain;
+
 /**
  * Conversions between JSON-like values and MapboxMaps data types.
  */
@@ -26,30 +34,69 @@ class Convert {
 
   private final static String TAG = "Convert";
 
-//  private static BitmapDescriptor toBitmapDescriptor(Object o) {
-//    final List<?> data = toList(o);
-//    switch (toString(data.get(0))) {
-//      case "defaultMarker":
-//        if (data.size() == 1) {
-//          return BitmapDescriptorFactory.defaultMarker();
-//        } else {
-//          return BitmapDescriptorFactory.defaultMarker(toFloat(data.get(1)));
-//        }
-//      case "fromAsset":
-//        if (data.size() == 2) {
-//          return BitmapDescriptorFactory.fromAsset(
-//              FlutterMain.getLookupKeyForAsset(toString(data.get(1))));
-//        } else {
-//          return BitmapDescriptorFactory.fromAsset(
-//              FlutterMain.getLookupKeyForAsset(toString(data.get(1)), toString(data.get(2))));
-//        }
-//      default:
-//        throw new IllegalArgumentException("Cannot interpret " + o + " as BitmapDescriptor");
-//    }
-//  }
+  static Context context;
+
+  static IconFactory iconFactory = IconFactory.getInstance(context);
 
   private static boolean toBoolean(Object o) {
     return (Boolean) o;
+  }
+
+  private static Icon toIcon(Object o) {
+    final List<?> data = toList(o);
+    switch (toString(data.get(0))) {
+      case "defaultMarker":
+        if (data.size() == 1) {
+          return iconFactory.defaultMarker();
+        } else {
+          return iconFactory.defaultMarker();
+        }
+      case "fromAsset":
+        if (data.size() == 2) {
+          return iconFactory.fromAsset(
+                  FlutterMain.getLookupKeyForAsset(toString(data.get(1))));
+        } else {
+          return iconFactory.fromAsset(
+                  FlutterMain.getLookupKeyForAsset(toString(data.get(1)), toString(data.get(2))));
+        }
+      case "fromAssetImage":
+        if (data.size() == 3) {
+          return iconFactory.fromAsset(
+                  FlutterMain.getLookupKeyForAsset(toString(data.get(1))));
+        } else {
+          throw new IllegalArgumentException(
+                  "'fromAssetImage' Expected exactly 3 arguments, got: " + data.size());
+        }
+      case "fromBytes":
+        return getBitmapFromBytes(data);
+      default:
+        throw new IllegalArgumentException("Cannot interpret " + o + " as BitmapDescriptor");
+    }
+  }
+
+  private static Icon getBitmapFromBytes(List<?> data) {
+    if (data.size() == 2) {
+      try {
+        Bitmap bitmap = toBitmap(data.get(1));
+        return iconFactory.fromBitmap(bitmap);
+      } catch (Exception e) {
+        throw new IllegalArgumentException("Unable to interpret bytes as a valid image.", e);
+      }
+    } else {
+      throw new IllegalArgumentException(
+              "fromBytes should have exactly one argument, the bytes. Got: " + data.size());
+    }
+  }
+
+
+  private static Bitmap toBitmap(Object o) {
+    byte[] bmpData = (byte[]) o;
+    Bitmap bitmap = BitmapFactory.decodeByteArray(bmpData, 0, bmpData.length);
+    if (bitmap == null) {
+      throw new IllegalArgumentException("Unable to decode bytes as a valid bitmap.");
+    } else {
+      return bitmap;
+    }
   }
 
   static CameraPosition toCameraPosition(Object o) {
@@ -64,6 +111,59 @@ class Convert {
 
   static boolean isScrollByCameraUpdate(Object o) {
     return toString(toList(o).get(0)).equals("scrollBy");
+  }
+
+  static Object markerIdToJson(String markerId) {
+    if (markerId == null) {
+      return null;
+    }
+    final Map<String, Object> data = new HashMap<>(1);
+    data.put("markerId", markerId);
+    return data;
+  }
+
+  static Object latLngToJson(LatLng latLng) {
+    return Arrays.asList(latLng.getLatitude(), latLng.getLongitude());
+  }
+
+  static String interpretMarkerOptions(Object o, MarkerOptionsSink sink) {
+    final Map<?, ?> data = toMap(o);
+
+    final Object consumeTapEvents = data.get("consumeTapEvents");
+    if (consumeTapEvents != null) {
+      sink.setConsumeTapEvents(toBoolean(consumeTapEvents));
+    }
+
+    final Object icon = data.get("icon");
+    if (icon != null) {
+      sink.setIcon(toIcon(icon));
+    }
+
+    final Object infoWindow = data.get("infoWindow");
+    if (infoWindow != null) {
+      interpretInfoWindowOptions(sink, (Map<String, Object>) infoWindow);
+    }
+    final Object position = data.get("position");
+    if (position != null) {
+      sink.setPosition(toLatLng(position));
+    }
+
+    final String markerId = (String) data.get("markerId");
+    if (markerId == null) {
+      throw new IllegalArgumentException("markerId was null");
+    } else {
+      return markerId;
+    }
+  }
+
+  private static void interpretInfoWindowOptions(
+          MarkerOptionsSink sink, Map<String, Object> infoWindow) {
+    String title = (String) infoWindow.get("title");
+    String snippet = (String) infoWindow.get("snippet");
+    // snippet is nullable.
+    if (title != null) {
+      sink.setInfoWindowText(title, snippet);
+    }
   }
 
   static CameraUpdate toCameraUpdate(Object o, MapboxMap mapboxMap, float density) {
@@ -141,6 +241,7 @@ class Convert {
     final List<?> data = toList(o);
     return new LatLng(toDouble(data.get(0)), toDouble(data.get(1)));
   }
+
 
   private static LatLngBounds toLatLngBounds(Object o) {
     if (o == null) {

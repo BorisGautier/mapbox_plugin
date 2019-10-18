@@ -40,7 +40,7 @@ class MapboxMapController extends ChangeNotifier {
       OnCameraTrackingDismissedCallback onCameraTrackingDismissed}) async {
     assert(id != null);
     final MethodChannel channel =
-        MethodChannel('plugins.flutter.io/mapbox_maps_$id');
+    MethodChannel('plugins.flutter.io/mapbox_plugin_$id');
     await channel.invokeMethod('map#waitForMap');
     return MapboxMapController._(id, channel, initialCameraPosition,
         onMapClick: onMapClick,
@@ -58,6 +58,8 @@ class MapboxMapController extends ChangeNotifier {
 
   /// Callbacks to receive tap events for symbols placed on this map.
   final ArgumentCallbacks<Circle> onCircleTapped = ArgumentCallbacks<Circle>();
+
+  final ArgumentCallbacks<Marker> onMarkerTapped = ArgumentCallbacks<Marker>();
 
   /// Callbacks to receive tap events for info windows on symbols
   final ArgumentCallbacks<Symbol> onInfoWindowTapped =
@@ -83,6 +85,9 @@ class MapboxMapController extends ChangeNotifier {
   /// The returned set will be a detached snapshot of the symbols collection.
   Set<Circle> get circles => Set<Circle>.from(_circles.values);
   final Map<String, Circle> _circles = <String, Circle>{};
+
+  Set<Marker> get markers => Set<Marker>.from(_markers.values);
+  final Map<String, Marker> _markers = <String, Marker>{};
 
   /// True if the map camera is currently moving.
   bool get isCameraMoving => _isCameraMoving;
@@ -136,6 +141,13 @@ class MapboxMapController extends ChangeNotifier {
       case 'camera#onIdle':
         _isCameraMoving = false;
         notifyListeners();
+        break;
+      case 'marker#onTap':
+        final String markerId = call.arguments['markerId'];
+        final Marker marker = _markers[markerId];
+        if (marker != null) {
+          onMarkerTapped(marker);
+        }
         break;
       case 'map#onMapClick':
         final double x = call.arguments['x'];
@@ -233,6 +245,14 @@ class MapboxMapController extends ChangeNotifier {
     });
     symbol._options = symbol._options.copyWith(changes);
     notifyListeners();
+  }
+
+  Future<void> _updateMarkers(_MarkerUpdates markerUpdates) async {
+    assert(markerUpdates != null);
+    await _channel.invokeMethod<void>(
+      'markers#update',
+      markerUpdates._toMap(),
+    );
   }
 
   /// Removes the specified [symbol] from the map. The symbol must be a current

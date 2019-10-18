@@ -1,18 +1,17 @@
 package com.tbg.mapbox_plugin;
 
-import static io.flutter.plugin.common.PluginRegistry.Registrar;
-
 import android.content.Context;
 
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import io.flutter.plugin.common.StandardMessageCodec;
 import io.flutter.plugin.platform.PlatformView;
 import io.flutter.plugin.platform.PlatformViewFactory;
 
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import static io.flutter.plugin.common.PluginRegistry.Registrar;
 
 public class MapboxMapFactory extends PlatformViewFactory {
 
@@ -34,6 +33,9 @@ public class MapboxMapFactory extends PlatformViewFactory {
         if (params.containsKey("initialCameraPosition")) {
             CameraPosition position = Convert.toCameraPosition(params.get("initialCameraPosition"));
             builder.setInitialCameraPosition(position);
+        }
+        if (params.containsKey("markersToAdd")) {
+            builder.setInitialMarkers(params.get("markersToAdd"));
         }
         return builder.build(id, context, mActivityState, mPluginRegistrar);
     }
