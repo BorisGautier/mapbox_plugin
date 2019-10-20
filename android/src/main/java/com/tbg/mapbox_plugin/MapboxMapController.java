@@ -8,14 +8,14 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
+
+import androidx.annotation.NonNull;
 
 import com.mapbox.geojson.Feature;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -126,13 +126,13 @@ final class MapboxMapController
     this.circles = new HashMap<>();
     this.density = context.getResources().getDisplayMetrics().density;
     methodChannel =
-      new MethodChannel(registrar.messenger(), "plugins.flutter.io/mapbox_maps_" + id);
+            new MethodChannel(registrar.messenger(), "plugins.flutter.io/mapbox_plugin_" + id);
     methodChannel.setMethodCallHandler(this);
     this.registrarActivityHashCode = registrar.activity().hashCode();
     this.markersController = new MarkersController(methodChannel);
   }
 
-  private static String getAccessToken(@NonNull Context context) {
+ /* private static String getAccessToken(@NonNull Context context) {
     try {
       ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
       Bundle bundle = ai.metaData;
@@ -143,7 +143,11 @@ final class MapboxMapController
       Log.e(TAG, "Failed to load meta-data, NullPointer: " + e.getMessage());
     }
     return null;
-  }
+  }*/
+
+    private static String getAccessToken(@NonNull Context context) {
+        return "sk.eyJ1IjoiZ2F1dHk5NiIsImEiOiJjanRwb3kzM2MwNmNvNGRsbHppazFyZDVtIn0.LxiJTXf8eV1v5n4f2_es0A";
+    }
 
   @Override
   public View getView() {

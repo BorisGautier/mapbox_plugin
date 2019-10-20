@@ -168,7 +168,6 @@ class _MapboxMapState extends State<MapboxMap> {
     _mapboxMapOptions = newOptions;
   }
 
-
   void _updateOptions(Map<String, dynamic> updates) async {
     if (updates.isEmpty) {
       return;
@@ -183,7 +182,6 @@ class _MapboxMapState extends State<MapboxMap> {
         _MarkerUpdates.from(_markers.values.toSet(), widget.markers));
     _markers = _keyByMarkerId(widget.markers);
   }
-
 
   Future<void> onPlatformViewCreated(int id) async {
     final MapboxMapController controller = await MapboxMapController.init(

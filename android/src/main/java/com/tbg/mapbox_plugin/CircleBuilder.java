@@ -67,6 +67,8 @@ class CircleBuilder implements CircleOptionsSink {
 
   @Override
   public void setDraggable(boolean draggable) {
-    circleOptions.setDraggable(draggable);
+
   }
+
+
 }

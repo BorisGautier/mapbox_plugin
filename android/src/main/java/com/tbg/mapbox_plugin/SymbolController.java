@@ -8,6 +8,7 @@ package com.tbg.mapbox_plugin;
 
 import android.graphics.Color;
 import android.graphics.PointF;
+
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
@@ -160,7 +161,6 @@ class SymbolController implements SymbolOptionsSink {
 
   @Override
   public void setZIndex(int zIndex) {
-    symbol.setZIndex(zIndex);
   }
 
   @Override

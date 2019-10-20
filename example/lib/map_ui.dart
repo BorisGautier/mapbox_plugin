@@ -36,6 +36,8 @@ class MapUiBodyState extends State<MapUiBody> {
     zoom: 11.0,
   );
 
+  final Set<Marker> _markers = Set();
+
   MapboxMapController mapController;
   CameraPosition _position = _kInitialPosition;
   bool _isMoving = false;
@@ -213,6 +215,13 @@ class MapUiBodyState extends State<MapUiBody> {
         myLocationEnabled: _myLocationEnabled,
         myLocationTrackingMode: _myLocationTrackingMode,
         onMapClick: (point, latLng) async {
+          _markers.add(Marker(
+            markerId: MarkerId("Marker"),
+            position: LatLng(latLng.latitude, latLng.longitude),
+            infoWindow: InfoWindow(
+              title: "Marker",
+            ),
+          ));
           print(
               "${point.x},${point.y}   ${latLng.latitude}/${latLng.longitude}");
           List features =

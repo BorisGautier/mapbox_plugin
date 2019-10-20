@@ -28,6 +28,7 @@ class MarkerBuilder implements MarkerOptionsSink {
 
     @Override
     public void setIcon(Icon icon) {
+
         markerOptions.icon(icon);
     }
 

@@ -24,10 +24,17 @@
             <meta-data
                 android:name="io.flutter.app.android.SplashScreenUntilFirstFrame"
                 android:value="true" />
+
+            <meta-data
+                android:name="com.mapbox.token"
+                android:value="sk.eyJ1IjoiZ2F1dHk5NiIsImEiOiJjanRwb3kzM2MwNmNvNGRsbHppazFyZDVtIn0.LxiJTXf8eV1v5n4f2_es0A" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
     </application>
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 </manifest>

@@ -1,6 +1,6 @@
 name: mapbox_plugin
-description: Un nouveau plugin pour mapbox
-version: 1.0.1
+description: Un nouveau plugin flutter pour mapbox. vous pouvez l'utiliser pour vos fonds de cartes à l'interieur des application flutter
+version: 1.0.4
 author: TCHOUKOUAHA Boris Gautier <tchoukouahaboris@gmail.com>
 homepage: https://github.com/BorisGautier/mapbox_plugin
 

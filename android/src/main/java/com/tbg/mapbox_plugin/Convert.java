@@ -27,22 +27,23 @@ import java.util.Map;
 
 import io.flutter.view.FlutterMain;
 
+import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
+
 /**
  * Conversions between JSON-like values and MapboxMaps data types.
  */
 class Convert {
 
   private final static String TAG = "Convert";
+    private final static Context context = getApplicationContext();
 
-  static Context context;
-
-  static IconFactory iconFactory = IconFactory.getInstance(context);
+    static IconFactory iconFactory = IconFactory.getInstance(context);
 
   private static boolean toBoolean(Object o) {
     return (Boolean) o;
   }
 
-  private static Icon toIcon(Object o) {
+    private static Icon toBitmapDescriptor(Object o) {
     final List<?> data = toList(o);
     switch (toString(data.get(0))) {
       case "defaultMarker":
@@ -136,7 +137,7 @@ class Convert {
 
     final Object icon = data.get("icon");
     if (icon != null) {
-      sink.setIcon(toIcon(icon));
+        sink.setIcon(toBitmapDescriptor(icon));
     }
 
     final Object infoWindow = data.get("infoWindow");

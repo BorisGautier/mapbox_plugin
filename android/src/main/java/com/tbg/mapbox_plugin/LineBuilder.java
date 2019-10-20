@@ -6,12 +6,12 @@
 
 package com.tbg.mapbox_plugin;
 
-import java.util.List;
-import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.plugins.annotation.Line;
 import com.mapbox.mapboxsdk.plugins.annotation.LineManager;
 import com.mapbox.mapboxsdk.plugins.annotation.LineOptions;
+
+import java.util.List;
 
 class LineBuilder implements LineOptionsSink {
   private final LineManager lineManager;
@@ -73,6 +73,6 @@ class LineBuilder implements LineOptionsSink {
 
   @Override
   public void setDraggable(boolean draggable) {
-    lineOptions.setDraggable(draggable);
+
   }
 }
